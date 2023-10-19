@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define USAGE                                                                                   \
         "NAME\n"                                                                                \
@@ -17,6 +18,52 @@
         "   Functionality is currenty very limited and very basic as CPython functionality is\n"\
         "   grand.\n"                                                                           \
 
+// Run file line by line
+void runfile(const char *filepath) {
+    // open the file for reading and check if reading was successful
+    FILE *file = fopen(filepath, "r");
+    if (file == NULL) {
+        perror("Error opening given file...");
+        return;
+    }
+
+    // buffer to hold the characters of each line
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+    size_t line_length = 0;
+
+    // Read contents of the file line by line
+    while((line_length = getLine(&buffer, &buffer_size, file)) != -1) run(buffer); // TODO: run function
+
+    // free dynamically allocated buffer
+    free(buffer);
+    buffer = NULL;
+
+    // Close the file
+    fclose(file);
+}
+
+void runprompt() {
+    // buffer to hold all of the characters in each line
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+
+    for (;;) {
+        printf(">>> ");
+
+        // Dynamically allocate memory for the input buffer
+        size_t characters_read = getLine(&buffer, &buffer_size, stdin);
+        if (characters_read == -1) {
+            free(buffer);
+            buffer = NULL;
+            break;
+        }
+        run(buffer);
+
+        free(buffer);
+        buffer = NULL;
+    }
+}
 
 // Returns the position of the last occurence of a character
 int searchchar(const char *str, char ch) {
@@ -34,7 +81,8 @@ int main(int argc, const char **argv) {
 
     switch (argc) {
         case 1: // no flags
-            printf("initiate console interpreter...");
+            printf("initiating console interpreter...");
+            runprompt();
         break;
 
         case 2: // 1 flag
@@ -78,7 +126,9 @@ int main(int argc, const char **argv) {
             if (argv[2][last_period + 1] != 'p')    goto exit;
             if (argv[2][last_period + 2] != 'i')    goto exit;
 
-            printf("run file interpreter\n");
+            // run the interpreter on the file
+            printf("running file interpreter\n");
+            runfile(argv[2]);
         break;
     }
 
