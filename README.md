@@ -18,7 +18,8 @@ With that said, I welcome all contribution and maybe one day this project could 
 This project will do its best to mimic [Python 3.0](https://docs.python.org/release/3.0/) and support limited features found in Python v3.0 documentation. Supported features will be documented as this software gets updated.
 
 ## Usage
-> Currently this project only runs on Linux machines (WSL also works)  
+> Currently this project only runs on Linux machines (WSL also works)    
+
 To run this project, clone this repository and via the terminal go to the project directory where the repo was cloned into  
 Type `make` : this will create an executable called `piton`
 To learn what the accepted flags are and what they do run `./piton -h` for more information.
