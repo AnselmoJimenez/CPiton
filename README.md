@@ -4,6 +4,8 @@
 ## Table of Contents
 - [Overview](#overview)
 - [Features and Functionality](#features-and-functionality)
+- [Usage](#usage)
+- [Contributions](#contributions)
 
 ## Overview
 This project is an attempt to create a Basic Python Interpreter that features basic python syntax but the keywords and data types will all be in Spanish.  
@@ -15,6 +17,12 @@ With that said, I welcome all contribution and maybe one day this project could 
 ## Features and Functionality
 This project will do its best to mimic [Python 3.0](https://docs.python.org/release/3.0/) and support limited features found in Python v3.0 documentation. Supported features will be documented as this software gets updated.
 
+## Usage
+> Currently this project only runs on Linux machines (WSL also works)  
+To run this project, clone this repository and via the terminal go to the project directory where the repo was cloned into  
+Type `make` : this will create an executable called `piton`
+To learn what the accepted flags are and what they do run `./piton -h` for more information.
+
 ## Contributions
-###### Author: Anselmo Jimenez
-###### Inspiration: Saul Jimenez
+**Author:** Anselmo Jimenez  
+**Inspiration:** Saul Jimenez
