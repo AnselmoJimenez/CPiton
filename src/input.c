@@ -1,66 +1,81 @@
-#include <stdio.h>
-#include <stdlib.h>
-
+#include "input.h"
 
 // Run file line by line
 void runfile(const char *filepath) {
-    // open the file for reading and check if reading was successful
-    FILE *file = fopen(filepath, "r");
-    if (file == NULL) {
-        perror("Error opening given file...");
+    // check for valid filepath extension (.pi)
+    int last_occurence = -1;
+    for (int i = 0; filepath[i] != '\0'; i++) {
+        if (filepath[i] == '.') last_occurence = i;
+    }
+
+    // invalid file extension handling
+    if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') {
+        printf("invalid file");
         return;
     }
 
-    // buffer to hold the characters of each line
-    char *buffer = NULL;
-    size_t buffer_size = 0;
-    size_t line_length = 0;
+    // open file from file path
+    FILE *file = fopen(filepath, "r");
+    if (file == NULL) {
+        printf("unable to open file '%s'\n", filepath);
+        return;
+    }
 
-    // Read contents of the file line by line
-    while((line_length = getLine(&buffer, &buffer_size, file)) != -1) run(buffer); // TODO: run function
+    // Read one line of the file and run the interpreter on that line
+    int max_buffer_length = 128;
+    char *line_buffer = (char *) malloc(sizeof(char) * max_buffer_length);
+    if (line_buffer == NULL) {
+        printf("Error allocating memory.\n");
+        return;
+    }
 
-    // free dynamically allocated buffer
-    free(buffer);
-    buffer = NULL;
+    // Read character
+    char ch = getc(file);
+    int count = 0;
+    while(ch != '\n' && ch != EOF) {
+        // if we surpass the amount of characters in the buffer reallocate more memory to the buffer
+        if (count == max_buffer_length) {
+            // increase maximum buffer length and reallocate to the line_buffer
+            max_buffer_length += max_buffer_length;
+            line_buffer = realloc(line_buffer, max_buffer_length);
 
-    // Close the file
-    fclose(file);
+            // Check if allocation is successful
+            if (line_buffer == NULL) {
+                printf("Error reallocating memory.\n");
+                return;
+            }
+        }
+        // add character to line buffer
+        line_buffer[count] = ch;
+        count++;
+
+        // Get next character
+        ch = getc(file);
+    }
+
+    line_buffer[count] = '\0';
+    count++;
+
+    char line[count];
+    strncpy(line, line_buffer, count);
+
+    free(line_buffer);
+    line_buffer = NULL;
+
+    run(line);
 }
 
 void runprompt() {
     // buffer to hold all of the characters in each line
-    char *buffer = NULL;
-    size_t buffer_size = 0;
 
     for (;;) {
         printf(">>> ");
 
-        // Dynamically allocate memory for the input buffer
-        size_t characters_read = getLine(&buffer, &buffer_size, stdin);
-        if (characters_read == -1) {
-            free(buffer);
-            buffer = NULL;
-            break;
-        }
-        run(buffer);
-
-        free(buffer);
-        buffer = NULL;
     }
 }
 
-// Returns the position of the last occurence of a character
-int searchchar(const char *str, char ch) {
-    int last_occurence = -1;
 
-    for (int i = 0; str[i] != '\0'; i++) 
-        if (str[i] == ch) 
-            last_occurence = i;
-
-    return last_occurence;
-}
-
-int main(int argc, const char **argv) {
+void assemble_input(int argc, const char **argv) {
     int failure = 0;
 
     switch (argc) {
@@ -101,22 +116,13 @@ int main(int argc, const char **argv) {
                 else goto exit;
             }
 
-            failure = 2;
-
-            // scan file for valid file extension
-            int last_period = searchchar(argv[2], '.');
-
-            if (last_period == -1)                  goto exit;
-            if (argv[2][last_period + 1] != 'p')    goto exit;
-            if (argv[2][last_period + 2] != 'i')    goto exit;
-
             // run the interpreter on the file
             printf("running file interpreter\n");
             runfile(argv[2]);
         break;
     }
 
-    return 0;
+    return;
 
 exit:
     switch (failure) {
@@ -128,5 +134,5 @@ exit:
         break;
     }
     
-    return 0;
+    return;
 }
