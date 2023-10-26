@@ -22,8 +22,13 @@
         "   Functionality is currenty very limited and very basic as CPython functionality is\n"\
         "   grand.\n"                                                                           \
 
+// Run file line by line
+void runfile(const char *filepath);
 
+// Run console interpreter
+void runprompt(void);
 
+// Assembles the input from command line arguments
 void assemble_input(int argc, const char **argv);
 
 #endif

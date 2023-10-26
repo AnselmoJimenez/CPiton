@@ -10,7 +10,7 @@ void runfile(const char *filepath) {
 
     // invalid file extension handling
     if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') {
-        printf("invalid file");
+        printf("invalid file. Given file is not a .pi file. '%s'\n", filepath);
         return;
     }
 
@@ -54,18 +54,20 @@ void runfile(const char *filepath) {
     }
 
     line_buffer[count] = '\0';
-    count++;
 
-    char line[count];
-    strncpy(line, line_buffer, count);
+    char line[count + 1];
+    strncpy(line, line_buffer, count + 1);
 
     free(line_buffer);
     line_buffer = NULL;
 
-    run(line);
+    printf("%s\n", line);
+    // run interpreter on line
+    //run(line);
 }
 
-void runprompt() {
+// Run console interpreter
+void runprompt(void) {
     // buffer to hold all of the characters in each line
 
     for (;;) {
@@ -74,7 +76,7 @@ void runprompt() {
     }
 }
 
-
+// Assembles the input from command line arguments
 void assemble_input(int argc, const char **argv) {
     int failure = 0;
 
@@ -90,7 +92,8 @@ void assemble_input(int argc, const char **argv) {
             // Scan command line option
             for (int i = 0; argv[1][i] != '\0'; i++) {
                 // check if the first character is a flag
-                if (i == 0 && argv[1][i] != '-') goto exit;
+                if (i == 0 && argv[1][i] != '-')                    goto exit;
+                if (argv[1][i] == '-' && argv[1][i + 1] == '\0')    goto exit;
 
                 // check for flag character
                 switch (argv[1][i]) {
@@ -110,6 +113,7 @@ void assemble_input(int argc, const char **argv) {
             for (int i = 0; argv[1][i] != '\0'; i++) {
                 // check if the first character is a flag
                 if (i == 0 && argv[1][i] != '-') goto exit;
+                else continue;
 
                 // check for flag character
                 if (argv[1][i] == 'f' && argv[1][i + 1] == '\0') break;
@@ -117,7 +121,7 @@ void assemble_input(int argc, const char **argv) {
             }
 
             // run the interpreter on the file
-            printf("running file interpreter\n");
+            printf("running interpreter\n");
             runfile(argv[2]);
         break;
     }
@@ -129,10 +133,18 @@ exit:
         case 1: 
             fprintf(stderr, "invalid command line option : %s\n", argv[failure]);
         break;
-        case 2: 
+        case 2:
             fprintf(stderr, "invalid file path\n");
         break;
     }
     
     return;
+}
+
+
+
+int main(int argc, char const **argv) {
+    assemble_input(argc, argv);
+    
+    return 0;
 }
