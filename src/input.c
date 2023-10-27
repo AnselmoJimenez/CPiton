@@ -1,14 +1,22 @@
 #include "input.h"
 
+static input_error_t error = INPUT_NO_ERROR;
+
+// search for the last occurence of a character in a string
+int searchchar(char character, const char *string) {
+    int last_occurence = -1;
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (string[i] == '.') last_occurence = i;
+    }
+    return last_occurence;
+}
+
+// Return one line from the file
+
 // Run file line by line
 void runfile(const char *filepath) {
     // check for valid filepath extension (.pi)
-    int last_occurence = -1;
-    for (int i = 0; filepath[i] != '\0'; i++) {
-        if (filepath[i] == '.') last_occurence = i;
-    }
-
-    // invalid file extension handling
+    int last_occurence = searchchar('.', filepath);
     if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') {
         printf("invalid file. Given file is not a .pi file. '%s'\n", filepath);
         return;
@@ -21,49 +29,9 @@ void runfile(const char *filepath) {
         return;
     }
 
-    // Read one line of the file and run the interpreter on that line
-    int max_buffer_length = 128;
-    char *line_buffer = (char *) malloc(sizeof(char) * max_buffer_length);
-    if (line_buffer == NULL) {
-        printf("Error allocating memory.\n");
-        return;
-    }
-
-    // Read character
-    char ch = getc(file);
-    int count = 0;
-    while(ch != '\n' && ch != EOF) {
-        // if we surpass the amount of characters in the buffer reallocate more memory to the buffer
-        if (count == max_buffer_length) {
-            // increase maximum buffer length and reallocate to the line_buffer
-            max_buffer_length += max_buffer_length;
-            line_buffer = realloc(line_buffer, max_buffer_length);
-
-            // Check if allocation is successful
-            if (line_buffer == NULL) {
-                printf("Error reallocating memory.\n");
-                return;
-            }
-        }
-        // add character to line buffer
-        line_buffer[count] = ch;
-        count++;
-
-        // Get next character
-        ch = getc(file);
-    }
-
-    line_buffer[count] = '\0';
-
-    char line[count + 1];
-    strncpy(line, line_buffer, count + 1);
-
-    free(line_buffer);
-    line_buffer = NULL;
-
-    printf("%s\n", line);
+    printf("\n");
     // run interpreter on line
-    //run(line);
+    // run(line);
 }
 
 // Run console interpreter
@@ -72,52 +40,83 @@ void runprompt(void) {
 
     for (;;) {
         printf(">>> ");
-
+        break;
     }
+}
+
+input_command_t scan_flag(const char *flag) {
+    input_command_t command = INPUT_NO_CMD;
+    scanner_t *scanner = (scanner_t *) calloc(1, sizeof(scanner_t));
+    scanner->token = flag[scanner->position];
+
+    do {
+        scanner->token = flag[scanner->position];
+
+        switch (scanner->token) {
+            case '-':   // Check for flag
+                if (flag[scanner->position + 1] == '\0') goto exit;
+                break;
+            case 'h':
+                if (flag[scanner->position + 1] != '\0') goto exit;
+                command = INPUT_USAGE;
+            case 'f':
+                if (flag[scanner->position + 1] != '\0') goto exit;
+                command = INPUT_FILE;
+            default: goto exit;
+        }
+
+        scanner->position++;
+
+    } while (scanner->token != '\0');
+
+    free(scanner);
+    scanner = NULL;
+
+    return command;
+
+exit:
+    error = INPUT_BAD_PARAMS;
+    return command;
 }
 
 // Assembles the input from command line arguments
 void assemble_input(int argc, const char **argv) {
-    int failure = 0;
-
     switch (argc) {
-        case 1: // no flags
-            printf("initiating console interpreter...");
+
+        // 0 Flags
+        case 1:
+            printf("running console interpreter...");
             runprompt();
         break;
 
-        case 2: // 1 flag
-            failure = 1;
-
-            // Scan command line option
-            for (int i = 0; argv[1][i] != '\0'; i++) {
-                // check if the first character is a flag
-                if (i == 0 && argv[1][i] != '-')                    goto exit;
-                if (argv[1][i] == '-' && argv[1][i + 1] == '\0')    goto exit;
-
-                // check for flag character
-                switch (argv[1][i]) {
-                    case 'h': // USAGE message
-                        if (argv[1][i + 1] == '\0') printf("%s\n", USAGE);
-                        else goto exit;
+        // 1 Flag
+        case 2:
+            switch (scan_flag(argv[1])) {
+                case INPUT_USAGE: 
+                    printf("%s\n", USAGE);
                     break;
-                    case 'f': goto exit; // no file associated
-                }
+                case INPUT_FILE:
+                    
             }
         break;
 
-        case 3: // flag and file path
-            failure = 1;
-            
+        // 2 Flags (flag and filepath)
+        case 3:
             // check for valid flag
             for (int i = 0; argv[1][i] != '\0'; i++) {
                 // check if the first character is a flag
-                if (i == 0 && argv[1][i] != '-') goto exit;
+                if (i == 0 && argv[1][i] != '-') {
+                    error = INPUT_BAD_PARAMS;
+                    goto exit;
+                }
                 else continue;
 
                 // check for flag character
                 if (argv[1][i] == 'f' && argv[1][i + 1] == '\0') break;
-                else goto exit;
+                else {
+                    error = INPUT_BAD_PARAMS;
+                    goto exit;
+                }
             }
 
             // run the interpreter on the file
@@ -125,20 +124,6 @@ void assemble_input(int argc, const char **argv) {
             runfile(argv[2]);
         break;
     }
-
-    return;
-
-exit:
-    switch (failure) {
-        case 1: 
-            fprintf(stderr, "invalid command line option : %s\n", argv[failure]);
-        break;
-        case 2:
-            fprintf(stderr, "invalid file path\n");
-        break;
-    }
-    
-    return;
 }
 
 

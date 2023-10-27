@@ -22,6 +22,30 @@
         "   Functionality is currenty very limited and very basic as CPython functionality is\n"\
         "   grand.\n"                                                                           \
 
+typedef struct {
+        int position;
+        char token;
+} scanner_t;
+
+typedef enum {
+        INPUT_NO_CMD,
+        INPUT_USAGE,
+        INPUT_CONSOLE,
+        INPUT_FILE,
+} input_command_t;
+
+typedef enum {
+        INPUT_NO_ERROR,
+        INPUT_BAD_PARAMS,
+        INPUT_BAD_PATH,
+        INPUT_BAD_FILE,
+        INPUT_BAD_OPEN,
+        INPUT_BAD_ALLOC,
+} input_error_t;
+
+// search for the last occurence of a character in a string
+int searchchar(char character, const char *string);
+
 // Run file line by line
 void runfile(const char *filepath);
 
