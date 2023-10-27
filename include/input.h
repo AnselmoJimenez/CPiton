@@ -34,23 +34,23 @@ typedef enum {
     INPUT_FILE,
 } input_command_t;
 
-typedef enum {
+enum input_errors{
     INPUT_NO_ERROR,
     INPUT_BAD_PARAMS,
     INPUT_BAD_PATH,
     INPUT_BAD_FILE,
     INPUT_BAD_OPEN,
     INPUT_BAD_ALLOC,
-} input_error_t;
+};
 
 // Handle input errors
-void handle_errors(input_error_t err, const char **argv);
+void err(enum input_errors err, const char *content);
 
 // Search for the last occurence of a character in a string
 int search_char(char character, const char *string);
 
 // Run file line by line
-void run_file(const char *filepath);
+int run_file(const char *filepath);
 
 // Run console interpreter
 void run_prompt(void);
@@ -59,6 +59,6 @@ void run_prompt(void);
 input_command_t scan_flag(const char *flag);
 
 // Assembles the input from command line arguments
-void assemble_input(int argc, const char **argv);
+int assemble_input(int argc, const char **argv);
 
 #endif

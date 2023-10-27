@@ -1,9 +1,30 @@
 #include "input.h"
 
-static input_error_t error = INPUT_NO_ERROR;
-
 // Handle input errors
-// void handle_errors(input_error_t err, const char **argv);
+void err(enum input_errors err, const char *content) {
+    switch (err) {
+        case INPUT_NO_ERROR: break;
+        case INPUT_BAD_PARAMS:
+            fprintf(stderr, "Invalid Parameters: %s\n", content);
+            break;
+        case INPUT_BAD_PATH:
+            fprintf(stderr, "Invalid file path: %s\n", content);
+            break;
+        case INPUT_BAD_FILE:
+            fprintf(stderr, "Invalid file. please check file \"%s\"\n", content);
+            break;
+        case INPUT_BAD_OPEN:
+            fprintf(stderr, "Unable to open file \"%s\". Please check permissions.", content);
+            break;
+        case INPUT_BAD_ALLOC:
+            fprintf(stderr, "Failure allocating memory.\n");
+            break;
+    }
+    printf("\n");
+
+
+    exit(1);
+}
 
 // search for the last occurence of a character in a string
 int search_char(char character, const char *string) {
@@ -15,24 +36,23 @@ int search_char(char character, const char *string) {
 }
 
 // Run file line by line
-void run_file(const char *filepath) {
+int run_file(const char *filepath) {
     // check for valid filepath extension (.pi)
-    int last_occurence = searchchar('.', filepath);
-    if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') {
-        printf("invalid file. Given file is not a .pi file. '%s'\n", filepath);
-        return;
-    }
+    int last_occurence = search_char('.', filepath);
+    if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') err(INPUT_BAD_PATH, filepath);
 
     // open file from file path
     FILE *file = fopen(filepath, "r");
-    if (file == NULL) {
-        printf("unable to open file '%s'\n", filepath);
-        return;
-    }
+    if (file == NULL) err(INPUT_BAD_OPEN, filepath);
 
     printf("\n");
+
+    // TODO: Implement read_line function to read on the interpreter.
+
     // run interpreter on line
     // run(line);
+
+    return 0;
 }
 
 // Run console interpreter
@@ -54,7 +74,6 @@ input_command_t scan_flag(const char *flag) {
     scanner->token = flag[scanner->position];
 
     do {
-        scanner->token = flag[scanner->position];
 
         switch (scanner->token) {
             case '-':   // Check for flag
@@ -72,7 +91,7 @@ input_command_t scan_flag(const char *flag) {
         }
 
         scanner->position++;
-
+        scanner->token = flag[scanner->position];
     } while (scanner->token != '\0');
 
     free(scanner);
@@ -81,18 +100,18 @@ input_command_t scan_flag(const char *flag) {
     return command;
 
 exit:
-    error = INPUT_BAD_PARAMS;
+    err(INPUT_BAD_PARAMS, flag);
     return command;
 }
 
 // Assembles the input from command line arguments
-void assemble_input(int argc, const char **argv) {
+int assemble_input(int argc, const char **argv) {
     switch (argc) {
 
     // 0 Flags
     case 1:
         printf("running console interpreter...\n");
-        runprompt();
+        run_prompt();
     break;
 
     // 1 Flag
@@ -105,6 +124,8 @@ void assemble_input(int argc, const char **argv) {
             printf("Please provide a file.\n");
             break;
         case INPUT_NO_CMD:
+            err(INPUT_BAD_PARAMS, argv[1]);
+            break;
         case INPUT_CONSOLE:
         default: break;
         }
@@ -117,23 +138,20 @@ void assemble_input(int argc, const char **argv) {
         case INPUT_FILE:
             // run the interpreter on the file
             printf("running interpreter\n");
-            runfile(argv[2]);
-        break;
+            run_file(argv[2]);
+            break;
         case INPUT_NO_CMD:
         case INPUT_USAGE:
         case INPUT_CONSOLE:
         default:
-            error = INPUT_BAD_PARAMS;
-        break;
+            err(INPUT_BAD_PARAMS, argv[1]);
+            break;
         }
 
     break;
     }
 
-    // Handle Errors
-    if (error = INPUT_NO_ERROR) return;
-
-
+    return 0;
 }
 
 
