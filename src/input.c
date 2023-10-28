@@ -35,10 +35,6 @@ int search_char(char character, const char *string) {
     return last_occurence;
 }
 
-const char *read_line(FILE *fileptr) {
-    (void *) fileptr;
-}
-
 // Run file line by line
 int run_file(const char *filepath) {
     // check for valid filepath extension (.pi)
@@ -49,12 +45,48 @@ int run_file(const char *filepath) {
     FILE *file = fopen(filepath, "r");
     if (file == NULL) err(INPUT_BAD_OPEN, filepath);
 
-    printf("\n");
+    // Read line
+    char *line = NULL;
+    size_t line_length = 0;
+    char ch = fgetc(file);
+    while (ch != EOF) {
+        // Check for the beginning of line and allocate memory
+        if (line_length == 0) line = (char *) malloc(1);
+        else line = (char *) realloc(line, line_length + 1);
 
-    // TODO: Implement read_line function to read on the interpreter.
+        // check if memory allocation was successful
+        if (line == NULL) err(INPUT_BAD_ALLOC, NULL);
 
-    // run interpreter on line
-    // run(line);
+        line[line_length++] = ch;
+        if (ch == '\n') {
+            line[line_length] = '\0';
+
+            // run this line
+            // run(line);
+            printf("%s", line);
+
+            // reset counters
+            line_length = 0;
+            free(line);
+            line = NULL;
+        }
+
+        ch = fgetc(file);
+    }
+
+    // process the last line of the file
+    if (line_length > 0) {
+        line[line_length] = '\0';
+
+        // run the last line
+        // run(line);
+        printf("%s", line);
+
+        free(line);
+        line = NULL;
+    }
+
+    fclose(file);
 
     return 0;
 }
