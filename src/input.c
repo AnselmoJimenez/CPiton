@@ -35,6 +35,10 @@ int search_char(char character, const char *string) {
     return last_occurence;
 }
 
+const char *read_line(FILE *fileptr) {
+    (void *) fileptr;
+}
+
 // Run file line by line
 int run_file(const char *filepath) {
     // check for valid filepath extension (.pi)
@@ -74,11 +78,8 @@ input_command_t scan_flag(const char *flag) {
     scanner->token = flag[scanner->position];
 
     do {
-
         switch (scanner->token) {
-            case '-':   // Check for flag
-                if (flag[scanner->position + 1] == '\0') goto exit;
-                break;
+            case '-': break;
             case 'h':
                 if (flag[scanner->position + 1] != '\0') goto exit;
                 command = INPUT_USAGE;
