@@ -44,13 +44,13 @@ enum input_errors{
 };
 
 // Handle input errors
-void err(enum input_errors err, const char *content);
+void err(enum input_errors err, const char *information);
 
 // Search for the last occurence of a character in a string
 int search_char(char character, const char *string);
 
 // Run file line by line
-int run_file(const char *filepath);
+void run_file(const char *filepath);
 
 // Run console interpreter
 void run_prompt(void);
@@ -59,6 +59,6 @@ void run_prompt(void);
 input_command_t scan_flag(const char *flag);
 
 // Assembles the input from command line arguments
-int assemble_input(int argc, const char **argv);
+void assemble_input(int argc, const char **argv);
 
 #endif

@@ -1,20 +1,20 @@
 #include "input.h"
 
 // Handle input errors
-void err(enum input_errors err, const char *content) {
+void err(enum input_errors err, const char *information) {
     switch (err) {
         case INPUT_NO_ERROR: break;
         case INPUT_BAD_PARAMS:
-            fprintf(stderr, "Invalid Parameters: %s\n", content);
+            fprintf(stderr, "Invalid Parameters: %s\n", information);
             break;
         case INPUT_BAD_PATH:
-            fprintf(stderr, "Invalid file path: %s\n", content);
+            fprintf(stderr, "Invalid file path: %s\n", information);
             break;
         case INPUT_BAD_FILE:
-            fprintf(stderr, "Invalid file. please check file \"%s\"\n", content);
+            fprintf(stderr, "Invalid file. please check file \"%s\"\n", information);
             break;
         case INPUT_BAD_OPEN:
-            fprintf(stderr, "Unable to open file \"%s\". Please check permissions.", content);
+            fprintf(stderr, "Unable to open file \"%s\". Please check permissions.", information);
             break;
         case INPUT_BAD_ALLOC:
             fprintf(stderr, "Failure allocating memory.\n");
@@ -36,7 +36,7 @@ int search_char(char character, const char *string) {
 }
 
 // Run file line by line
-int run_file(const char *filepath) {
+void run_file(const char *filepath) {
     // check for valid filepath extension (.pi)
     int last_occurence = search_char('.', filepath);
     if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') err(INPUT_BAD_PATH, filepath);
@@ -47,9 +47,9 @@ int run_file(const char *filepath) {
 
     // Read line
     char *line = NULL;
+    char ch = 0;
     size_t line_length = 0;
-    char ch = fgetc(file);
-    while (ch != EOF) {
+    while ((ch = fgetc(file)) != EOF) {
         // Check for the beginning of line and allocate memory
         if (line_length == 0) line = (char *) malloc(1);
         else line = (char *) realloc(line, line_length + 1);
@@ -57,7 +57,9 @@ int run_file(const char *filepath) {
         // check if memory allocation was successful
         if (line == NULL) err(INPUT_BAD_ALLOC, NULL);
 
+        // set current index at line_length to character read, then incremenet line_length
         line[line_length++] = ch;
+
         if (ch == '\n') {
             line[line_length] = '\0';
 
@@ -70,8 +72,6 @@ int run_file(const char *filepath) {
             free(line);
             line = NULL;
         }
-
-        ch = fgetc(file);
     }
 
     // process the last line of the file
@@ -87,20 +87,41 @@ int run_file(const char *filepath) {
     }
 
     fclose(file);
-
-    return 0;
 }
 
 // Run console interpreter
 void run_prompt(void) {
-    // buffer to hold all of the characters in each line
-
     for (;;) {
         printf(">>> ");
-    
-        break;
+
+        char *line = NULL;
+        char ch = 0;
+        size_t line_length = 0;
+        
+        while ((ch = getchar()) != '\n') {
+            // Allocate memory for each new character encountered
+            if (line_length == 0) line = (char *) malloc(sizeof(char));
+            else line = (char *) realloc(line, line_length + 1);
+
+            // Check for successful memory allocation
+            if (line == NULL) err(INPUT_BAD_ALLOC, NULL);
+
+            // set index at line_length to ch, then increment
+            line[line_length++] = ch;
+        }
+
+        // If there is a line...
+        if (line_length > 0) {
+            // End of the line
+            line[line_length] = '\0';
+
+            // Run this line
+            printf("%s\n", line);
+
+            free(line);
+            line = NULL;
+        }
     }
-    printf("\n");
 }
 
 // Scan flag for command and errors
@@ -110,23 +131,26 @@ input_command_t scan_flag(const char *flag) {
     scanner->token = flag[scanner->position];
 
     do {
+        // check token for validity
         switch (scanner->token) {
             case '-': break;
-            case 'h':
+            case 'h': // Usage command
                 if (flag[scanner->position + 1] != '\0') goto exit;
                 command = INPUT_USAGE;
                 break;
-            case 'f':
+            case 'f': // File command
                 if (flag[scanner->position + 1] != '\0') goto exit;
                 command = INPUT_FILE;
                 break;
             default: goto exit;
         }
 
+        // go to next token
         scanner->position++;
         scanner->token = flag[scanner->position];
     } while (scanner->token != '\0');
-
+    
+    // free memory
     free(scanner);
     scanner = NULL;
 
@@ -138,7 +162,7 @@ exit:
 }
 
 // Assembles the input from command line arguments
-int assemble_input(int argc, const char **argv) {
+void assemble_input(int argc, const char **argv) {
     switch (argc) {
 
     // 0 Flags
@@ -170,7 +194,7 @@ int assemble_input(int argc, const char **argv) {
         switch (scan_flag(argv[1])) {
         case INPUT_FILE:
             // run the interpreter on the file
-            printf("running interpreter\n");
+            printf("running interpreter...\n");
             run_file(argv[2]);
             break;
         case INPUT_NO_CMD:
@@ -183,8 +207,6 @@ int assemble_input(int argc, const char **argv) {
 
     break;
     }
-
-    return 0;
 }
 
 
