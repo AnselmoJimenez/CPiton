@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef INPUT_H
 #define INPUT_H
 
@@ -22,10 +24,6 @@
         "   Functionality is currenty very limited and very basic as CPython functionality is\n"\
         "   grand.\n"                                                                           \
 
-typedef struct {
-    int position;
-    char token;
-} scanner_t;
 
 typedef enum {
     INPUT_NO_CMD,

@@ -49,6 +49,7 @@ void run_file(const char *filepath) {
     char *line = NULL;
     char ch = 0;
     size_t line_length = 0;
+    
     while ((ch = fgetc(file)) != EOF) {
         // Check for the beginning of line and allocate memory
         if (line_length == 0) line = (char *) malloc(1);
@@ -127,32 +128,30 @@ void run_prompt(void) {
 // Scan flag for command and errors
 input_command_t scan_flag(const char *flag) {
     input_command_t command = INPUT_NO_CMD;
-    scanner_t *scanner = (scanner_t *) calloc(1, sizeof(scanner_t));
-    scanner->token = flag[scanner->position];
+    int position = 0;
+    char token = flag[position];
 
     do {
         // check token for validity
-        switch (scanner->token) {
+        switch (token) {
             case '-': break;
             case 'h': // Usage command
-                if (flag[scanner->position + 1] != '\0') goto exit;
+                if (flag[position + 1] != '\0') goto exit;
+                if (position != 1)              goto exit;
                 command = INPUT_USAGE;
                 break;
             case 'f': // File command
-                if (flag[scanner->position + 1] != '\0') goto exit;
+                if (flag[position + 1] != '\0') goto exit;
+                if (position != 1)              goto exit;
                 command = INPUT_FILE;
                 break;
             default: goto exit;
         }
 
         // go to next token
-        scanner->position++;
-        scanner->token = flag[scanner->position];
-    } while (scanner->token != '\0');
-    
-    // free memory
-    free(scanner);
-    scanner = NULL;
+        position++;
+        token = flag[position];
+    } while (token != '\0');
 
     return command;
 
