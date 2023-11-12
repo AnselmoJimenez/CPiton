@@ -5,10 +5,11 @@
 
 #include "token.h"
 #include "piton.h"
+#include "linkedlist.h"
 
 typedef struct lexer {
     line_t *line;
-    token_t *tokens;
+    node_t *tokens;
     int start;
     int current;
     int line_index;

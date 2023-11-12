@@ -21,4 +21,4 @@ void destroy_lexer() {
 }
 
 // // Scans through tokens in the line
-// const char **scan_tokens();
+// const char **scan_tokens() {}
