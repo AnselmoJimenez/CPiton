@@ -43,6 +43,7 @@ void run_file(const char *filepath) {
 
     // Read line
     line_t *line = (line_t *) malloc(sizeof(line_t *));
+    if (line == NULL) report_err(0, NULL, "Unable to allocate memory");
     char ch = 0;
     line->length = 0;
     
@@ -90,6 +91,7 @@ void run_prompt(void) {
         printf(">>> ");
 
         line_t *line = (line_t *) malloc(sizeof(line_t *));
+        if (line == NULL) report_err(0, NULL, "Unable to allocate memory");
         char ch = 0;
         line->length = 0;
         
