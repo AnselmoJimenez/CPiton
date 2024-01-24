@@ -66,8 +66,8 @@ void run_file(const char *filepath) {
 
             // reset counters
             line->length = 0;
-            free(line);
-            line = NULL;
+            free(line->data);
+            line->data = NULL;
         }
     }
 
