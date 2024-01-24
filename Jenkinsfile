@@ -4,12 +4,16 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'echo "BUILDING..."'
+                sh './build.sh'
             }
         }
         stage('Test') {
             steps {
-                sh 'echo "TESTING..."'
+                sh 'echo "Testing help message"'
+                sh './Piton -h'
+
+                sh 'echo "Testing read.pi"'
+                sh './Piton -f tests/read.pi'
             }
         }
         stage('Deploy') {

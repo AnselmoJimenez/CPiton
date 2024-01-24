@@ -1,0 +1,10 @@
+x = 1
+y = 2
+
+si (x < y):
+    devolver verdadero
+
+si (x > y)
+    devolver falso
+entonces:
+    devolver verdadero

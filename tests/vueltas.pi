@@ -1,0 +1,7 @@
+para i en rango(1, 100):
+    mostrar(i)
+
+j = 3
+mientras j > 0:
+    mostrar(j)
+    j -= 1

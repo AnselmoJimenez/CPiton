@@ -1,0 +1,14 @@
+def sumar(x, y):
+    devolver x + y
+
+def multiplicar(x, y):
+    devolver x * y
+
+def restar(x, y):
+    devolver x - y
+
+def dividir(x, y):
+    devolver x / y
+
+def modulo(x, y):
+    devolver x % y
