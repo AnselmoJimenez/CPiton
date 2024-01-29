@@ -3,7 +3,7 @@
 // Create a new node
 node_t *create_node(token_t *data) {
     node_t *new_node = (node_t *) malloc(sizeof(node_t *));
-    if (new_node == NULL) report_err(0, NULL, "Memory unable to be allocated for new node");
+    if (new_node == NULL) printf("Unable to allocate memory"); // report_err(0, NULL, "Memory unable to be allocated for new node");
 
     new_node->data = data;
     new_node->next = NULL;
@@ -56,10 +56,15 @@ void print_list(node_t *head) {
     // traverse the linked list forward
     printf("[");
     while (current != NULL) {
-        printf("%s, ", current->data->lexeme);
-        current = current->next;
+        if (current->next == NULL) {
+            printf("%s]\n", current->data->lexeme);
+            break;
+        } else {
+            printf("%s, ", current->data->lexeme);
+            current = current->next;
+        }
     }
-    printf("none]\n");
+    printf("\n");
 }
 
 // #define DEBUG
