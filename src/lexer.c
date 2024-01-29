@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 static lexer_t *lex = NULL;
-// static node_t *head = NULL;
+static node_t *head = NULL;
 
 // initialize the lexer
 void init_lexer(line_t *line_data) {
@@ -21,7 +21,25 @@ void destroy_lexer() {
     lex = NULL;
 }
 
+void scan() {
+    char c = lex->line_data->data[lex->current++];
+    switch (c) {
+    case ')':
+        insert(&head, new_token(LPARENTHESIS, c, NULL, lex->line_index));
+        break;
+    
+    default:
+        break;
+    }
+
+}
+
 // Scans through tokens in the line
-node_t *scan_tokens() {
-    return NULL;
+void scan_tokens() {
+    while (lex->current <= lex->line_data->length) {
+        lex->start = lex->current;
+        scan();
+    }
+
+    insert(&head, new_token(EOF, "", NULL, lex->line_index));
 }
