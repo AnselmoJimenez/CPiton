@@ -27,11 +27,28 @@ void scan() {
     case ')':
         insert(&head, new_token(LPARENTHESIS, c, NULL, lex->line_index));
         break;
-    
+    case '(':
+        insert(&head, new_token(RPARENTHESIS, c, NULL, lex->line_index));
+        break;
+    case '.':
+        insert(&head, new_token(DOT, c, NULL, lex->line_index));
+        break;
+    case '+':
+        insert(&head, new_token(PLUS, c, NULL, lex->line_index));
+        break;
+    case '-':
+        insert(&head, new_token(MINUS, c, NULL, lex->line_index));
+        break;
+    case '*':
+        insert(&head, new_token(MULTIPLY, c, NULL, lex->line_index));
+        break;
+    case '/':
+        insert(&head, new_token(DIVIDE, c, NULL, lex->line_index));
+        break;
     default:
         break;
     }
-
+    // TODO: NEED TO IMPLEMENT
 }
 
 // Scans through tokens in the line

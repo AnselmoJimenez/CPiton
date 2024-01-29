@@ -10,9 +10,11 @@ typedef enum tokenizer {
     LPARENTHESIS,
     RPARENTHESIS,
     COLON,
-
-    // Comments
-    HASH,
+    PLUS,
+    MINUS,
+    MULTIPLY,
+    DIVIDE,
+    DOT,
 
     // Literals
     IDENTIFIER,
