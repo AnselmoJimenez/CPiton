@@ -4,11 +4,10 @@
 #define LEXER_H
 
 #include "token.h"
-#include "piton.h"
 #include "linkedlist.h"
 
 typedef struct lexer {
-    line_t *line;
+    line_t *line_data;
     node_t *tokens;
     int start;
     int current;
@@ -16,7 +15,7 @@ typedef struct lexer {
 } lexer_t;
 
 // initialize the lexer
-void init_lexer(line_t *line);
+void init_lexer(line_t *line_data);
 
 // frees the space allocated by the init_lexer function above
 void destroy_lexer();

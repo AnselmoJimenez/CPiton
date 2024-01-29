@@ -1,4 +1,6 @@
 #include "lexer.h"
+#include "token.h"
+#include "linkedlist.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,9 +8,9 @@
 static lexer_t *lex = NULL;
 
 // initialize the lexer
-void init_lexer(line_t *line) {
+void init_lexer(line_t *line_data) {
     lex = (lexer_t *) malloc(sizeof(lexer_t));
-    lex->line = line;
+    lex->line_data = line_data;
     lex->start = 0;
     lex->current = 0;
     lex->line_index = 1;
