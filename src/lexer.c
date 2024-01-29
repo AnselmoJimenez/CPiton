@@ -1,15 +1,14 @@
 #include "lexer.h"
-#include "token.h"
-#include "linkedlist.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 static lexer_t *lex = NULL;
+// static node_t *head = NULL;
 
 // initialize the lexer
 void init_lexer(line_t *line_data) {
-    lex = (lexer_t *) malloc(sizeof(lexer_t));
+    lex = (lexer_t *) malloc(sizeof(lexer_t *));
     lex->line_data = line_data;
     lex->start = 0;
     lex->current = 0;
@@ -22,5 +21,7 @@ void destroy_lexer() {
     lex = NULL;
 }
 
-// // Scans through tokens in the line
-// const char **scan_tokens() {}
+// Scans through tokens in the line
+node_t *scan_tokens() {
+    return NULL;
+}

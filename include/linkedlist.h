@@ -3,7 +3,9 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
-#include "piton.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "token.h"
 
 typedef struct node {

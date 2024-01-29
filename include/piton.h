@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "lexer.h"
 
 #define USAGE                                                                                   \
         "NAME\n"                                                                                \
@@ -31,11 +32,6 @@ typedef enum commands {
     INPUT_CONSOLE,
     INPUT_FILE,
 } command_t;
-
-typedef struct lines {
-    char *data;
-    size_t length;
-} line_t;
 
 // Execute the current line
 void run(line_t *line);

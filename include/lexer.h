@@ -3,8 +3,16 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "token.h"
 #include "linkedlist.h"
+
+typedef struct lines {
+    char *data;
+    size_t length;
+} line_t;
 
 typedef struct lexer {
     line_t *line_data;
@@ -21,7 +29,7 @@ void init_lexer(line_t *line_data);
 void destroy_lexer();
 
 // Scans through tokens in the line
-const char **scan_tokens();
+node_t* scan_tokens();
 
 
 
