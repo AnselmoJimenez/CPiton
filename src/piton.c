@@ -2,22 +2,13 @@
 
 // Execute the current line 
 void run(line_t *line) {
-    printf("%s", line->data);
+    init_lexer(line);
 }
 
 // Handle input errors
-void report_err(int line, const char* loc, const char *msg) {
-    switch (line) {
-    case 0:
-        if (loc != NULL)    fprintf(stderr, "Error: %s '%s'\n", msg, loc);
-        else                fprintf(stderr, "Error: %s\n", msg);
-
-        break;
-    default:
-        fprintf(stderr, "Error: %s\n", msg);
-        fprintf(stderr, "\tLine %d | %s\n", line, loc);
-        break;
-    }
+void report_err(const char *loc, const char *msg) {
+    if (loc != NULL)    fprintf(stderr, "Error: %s '%s'\n", msg, loc);
+    else                fprintf(stderr, "Error: %s\n", msg);
 
     exit(1);
 }
@@ -35,15 +26,15 @@ int search_char(char character, const char *string) {
 void run_file(const char *filepath) {
     // check for valid filepath extension (.pi)
     int last_occurence = search_char('.', filepath);
-    if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') report_err(0, filepath, "Cannot read file");
+    if (last_occurence == -1 || filepath[last_occurence + 1] != 'p' || filepath[last_occurence + 2] != 'i') report_err(filepath, "Cannot read file");
 
     // open file from file path
     FILE *file = fopen(filepath, "r");
-    if (file == NULL) report_err(0, filepath, "Unable to open file");
+    if (file == NULL) report_err(filepath, "Unable to open file");
 
     // Read line
     line_t *line = (line_t *) malloc(sizeof(line_t *));
-    if (line == NULL) report_err(0, NULL, "Unable to allocate memory");
+    if (line == NULL) report_err(NULL, "Unable to allocate memory");
     char ch = 0;
     line->length = 0;
     
@@ -53,7 +44,7 @@ void run_file(const char *filepath) {
         else                    line->data = (char *) realloc(line->data, line->length + 1);
 
         // check if memory allocation was successful
-        if (line->data == NULL) report_err(0, NULL, "Unable to allocate memory");
+        if (line->data == NULL) report_err(NULL, "Unable to allocate memory");
 
         // set current index at line_length to character read, then incremenet line_length
         line->data[line->length++] = ch;
@@ -91,7 +82,7 @@ void run_prompt(void) {
         printf(">>> ");
 
         line_t *line = (line_t *) malloc(sizeof(line_t *));
-        if (line == NULL) report_err(0, NULL, "Unable to allocate memory");
+        if (line == NULL) report_err(NULL, "Unable to allocate memory");
         char ch = 0;
         line->length = 0;
         
@@ -101,7 +92,7 @@ void run_prompt(void) {
             else                    line->data = (char *) realloc(line->data, line->length + 1);
 
             // Check for successful memory allocation
-            if (line->data == NULL) report_err(0, NULL, "Unable to allocate memory");
+            if (line->data == NULL) report_err(NULL, "Unable to allocate memory");
 
             // set index at line_length to ch, then increment
             line->data[line->length++] = ch;
@@ -152,7 +143,7 @@ command_t scan_flag(const char *flag) {
     return command;
 
 exit:
-    report_err(0, flag, "Invalid flag");
+    report_err(flag, "Invalid flag");
     return command;
 }
 
@@ -176,7 +167,7 @@ void assemble_input(int argc, const char **argv) {
             printf("Please provide a file.\n");
             break;
         case INPUT_NO_CMD:
-            report_err(0, argv[1], "Invalid flag");
+            report_err(argv[1], "Invalid flag");
             break;
         case INPUT_CONSOLE:
         default: break;
@@ -196,7 +187,7 @@ void assemble_input(int argc, const char **argv) {
         case INPUT_USAGE:
         case INPUT_CONSOLE:
         default:
-            report_err(0, argv[1], "Invalid flag");
+            report_err(argv[1], "Invalid flag");
             break;
         }
 

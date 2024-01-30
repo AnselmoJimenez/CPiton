@@ -37,7 +37,7 @@ typedef enum commands {
 void run(line_t *line);
 
 // Handle input errors
-void report_err(int line, const char* loc, const char *msg);
+void report_err(const char *loc, const char *msg);
 
 // Search for the last occurence of a character in a string
 int search_char(char character, const char *string);

@@ -5,8 +5,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#include "token.h"
 #include "linkedlist.h"
 
 typedef struct lines {
@@ -28,10 +28,14 @@ void init_lexer(line_t *line_data);
 // frees the space allocated by the init_lexer function above
 void destroy_lexer();
 
-// Scans through tokens in the line
-node_t* scan_tokens();
+// Report errors of unrecognized lexemes
+void lexer_error(int line_number, token_t *token, const char *message);
 
+// Scans through
 void scan();
+
+// Scans through tokens in the line
+void scan_tokens();
 
 
 #endif
