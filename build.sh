@@ -33,7 +33,7 @@ $cc $object_files -o $output
 
 if [ $? -eq 0 ]; 
 then
-    echo "Compilation successful."
+    echo "COMPILATION SUCCESSFUL"
 else
-    echo "Compilation failed."
+    echo "COMPILATION FAILED"
 fi
