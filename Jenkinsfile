@@ -8,19 +8,26 @@ def buildVersionHistory() {
 
         // Get Commit IDs
         for (int j = 0; j < entries.length; j++) {
-            versionHistory += "${entries[j].commitId} "
+            if (entries.length < 1) {
+                versionHistory += "${entries[j].commitId}"
+                break;
+            }
+
+            versionHistory += "'${entries[j].commitId}' "
         }
 
         versionHistory += ","
 
         // Get Commit Messages
         for (int j = 0; j < entries.length; j++) {
-            versionHistory += "${entries[j].msg} "
+            if (entries.length < 1) {
+                versionHistory += "${entries[j].commitId}"
+                break;
+            }
+            versionHistory += "'${entries[j].msg}' "
         }
 
     }
-    
-    versionHistory += ", , "
     return versionHistory
 }
 
