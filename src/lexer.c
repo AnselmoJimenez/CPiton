@@ -2,15 +2,15 @@
 
 static lexer_t *lex = NULL;
 static node_t *head = NULL;
-
+    
 // Report errors of unrecognized lexemes
 void lexer_error(int line_number, token_t *token, const char *message) {
     if (token == NULL) fprintf(stderr, "%s\n", message);
     else               fprintf(stderr, "Error: Line %d, %s '%s'", line_number, message, token->lexeme);
-    
+
     exit(1);
 }
-
+     
 // initialize the lexer
 void init_lexer(line_t *line_data) {
     lex = (lexer_t *) malloc(sizeof(lexer_t *));
