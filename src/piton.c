@@ -118,7 +118,7 @@ command_t scan_flag(const char *flag) {
     command_t command = INPUT_NO_CMD;
     int position = 0;
     char token = flag[position];
-
+    
     do {
         // check token for validity
         switch (token) {
@@ -140,7 +140,7 @@ command_t scan_flag(const char *flag) {
         position++;
         token = flag[position];
     } while (token != '\0');
-
+    
     return command;
 
 exit:
