@@ -18,7 +18,7 @@ typedef enum tokenizer {
     DIVIDE, DIVIDE_EQUAL,
     MODULO, MODULO_EQUAL,
     DOT, COLON,
-
+    
     BANG, BANG_EQUAL,
     EQUAL, EQUAL_EQUAL,
     LESSTHAN, LESSTHAN_EQUAL,
