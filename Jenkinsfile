@@ -1,6 +1,6 @@
 @NonCPS
 def buildVersionHistory() {
-    def versionHistory = "${BUILD_TIMESTAMP},${env.JOB_NAME}_${env.BUILD_ID},"
+    def versionHistory = new Date().toString() + ",${env.JOB_NAME}_${env.BUILD_ID},"
 
     def changeLogSets = currentBuild.changeSets
     for (int i = 0; i < changeLogSets.size(); i++) {
