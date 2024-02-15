@@ -3,25 +3,31 @@
 static lexer_t *lex = NULL;
 static node_t *head = NULL;
 
+// Report errors of unrecognized lexemes
+void lexer_error(int line_number, token_t *token, const char *message) {
+    if (token == NULL) fprintf(stderr, "%s\n", message);
+    else               fprintf(stderr, "Error: Line %d, %s '%s'", line_number, message, token->lexeme);
+    
+    exit(1);
+}
+
 // initialize the lexer
 void init_lexer(line_t *line_data) {
     lex = (lexer_t *) malloc(sizeof(lexer_t *));
+    if (lex == NULL) lexer_error(0, NULL, "Unable to allocate memory for Lexer");
+
     lex->line_data = line_data;
     lex->start = 0;
     lex->current = 0;
     lex->line_index = 1;
+
+    scan();
 }
 
 // frees the space allocated by the init_lexer function above
 void destroy_lexer() {
     free(lex);
     lex = NULL;
-}
-
-// Report errors of unrecognized lexemes
-void lexer_error(int line_number, token_t *token, const char *message) {
-    fprintf(stderr, "Error: Line %d, %s '%s'", line_number, message, token->lexeme);
-    exit(1);
 }
 
 // Helper Functions
@@ -46,7 +52,7 @@ char peek() {
     else return lex->line_data->data[lex->current];
 }
 
-void string(char quote_char_type); // TODO: NEED TO IMPLEMENT
+void string();
 
 // Scan each character and tokenize it
 void scan() {
@@ -59,19 +65,21 @@ void scan() {
     case ')' : insert(&head, new_token(LPARENTHESIS, &c, NULL, lex->line_index)); break;
     case '(' : insert(&head, new_token(RPARENTHESIS, &c, NULL, lex->line_index)); break;
     case '.' : insert(&head, new_token(DOT, &c, NULL, lex->line_index));          break;
-    case '+' : match('=') ? insert(&head, new_token(PLUS_EQUAL, "+=", NULL, lex->line_index))    : insert(&head, new_token(PLUS, &c, NULL, lex->line_index));     break;
-    case '-' : match('=') ? insert(&head, new_token(MINUS_EQUAL, "-=", NULL, lex->line_index))   : insert(&head, new_token(MINUS, &c, NULL, lex->line_index));    break;
-    case '*' : match('=') ? insert(&head, new_token(MULTIPLY_EQUAL, "*=", NULL, lex->line_index)): insert(&head, new_token(MULTIPLY, &c, NULL, lex->line_index)); break;
-    case '/' : match('=') ? insert(&head, new_token(DIVIDE_EQUAL, "/=", NULL, lex->line_index))  : insert(&head, new_token(DIVIDE, &c, NULL, lex->line_index));   break;
-    case '%' : match('=') ? insert(&head, new_token(MODULO_EQUAL, "%=", NULL, lex->line_index))  : insert(&head, new_token(MODULO, &c, NULL, lex->line_index));   break;
-    case '=' : match('=') ? insert(&head, new_token(EQUAL_EQUAL, "==", NULL, lex->line_index))   : insert(&head, new_token(EQUAL, &c, NULL, lex->line_index));    break;
-    case '!' : match('=') ? insert(&head, new_token(BANG_EQUAL, "!=", NULL, lex->line_index))    : insert(&head, new_token(BANG, &c, NULL, lex->line_index));     break;
+    case '+' : match('=') ? insert(&head, new_token(PLUS_EQUAL, "+=", NULL, lex->line_index))       : insert(&head, new_token(PLUS, &c, NULL, lex->line_index));        break;
+    case '-' : match('=') ? insert(&head, new_token(MINUS_EQUAL, "-=", NULL, lex->line_index))      : insert(&head, new_token(MINUS, &c, NULL, lex->line_index));       break;
+    case '*' : match('=') ? insert(&head, new_token(MULTIPLY_EQUAL, "*=", NULL, lex->line_index))   : insert(&head, new_token(MULTIPLY, &c, NULL, lex->line_index));    break;
+    case '/' : match('=') ? insert(&head, new_token(DIVIDE_EQUAL, "/=", NULL, lex->line_index))     : insert(&head, new_token(DIVIDE, &c, NULL, lex->line_index));      break;
+    case '%' : match('=') ? insert(&head, new_token(MODULO_EQUAL, "%=", NULL, lex->line_index))     : insert(&head, new_token(MODULO, &c, NULL, lex->line_index));      break;
+    case '=' : match('=') ? insert(&head, new_token(EQUAL_EQUAL, "==", NULL, lex->line_index))      : insert(&head, new_token(EQUAL, &c, NULL, lex->line_index));       break;
+    case '!' : match('=') ? insert(&head, new_token(BANG_EQUAL, "!=", NULL, lex->line_index))       : insert(&head, new_token(BANG, &c, NULL, lex->line_index));        break;
+    case '<' : match('=') ? insert(&head, new_token(LESSTHAN_EQUAL, "<=", NULL, lex->line_index))   : insert(&head, new_token(LESSTHAN, &c, NULL, lex->line_index));    break;
+    case '>' : match('=') ? insert(&head, new_token(GREATERTHAN_EQUAL, ">=", NULL, lex->line_index)): insert(&head, new_token(GREATERTHAN, &c, NULL, lex->line_index)); break;
     case ' ' : 
     case '\t': // FOR NOW
     case '\r': break;
     case '\n': lex->line_index++; break;
     case '\"': // string("\""); break; or multiline comment
-    case '\'': string('\''); break;
+    case '\'': break;
     default:
         lexer_error(lex->line_index, new_token(ERROR, &c, NULL, lex->line_index), "Invalid Character");
         break;
@@ -85,6 +93,6 @@ void scan_tokens() {
         scan();
     }
 
-    insert(&head, new_token(EOF, "", NULL, lex->line_index));
+    insert(&head, new_token(EOF, '\0', NULL, lex->line_index));
     print_list(head);
 }

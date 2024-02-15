@@ -2,6 +2,7 @@
 
 // Execute the current line 
 void run(line_t *line) {
+    // printf("%s\n", line->data);
     init_lexer(line);
 }
 

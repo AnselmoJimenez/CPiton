@@ -1,3 +1,29 @@
+@NonCPS
+def buildVersionHistory() {
+    def versionHistory = "${BUILD_TIMESTAMP},${env.JOB_NAME}_${env.BUILD_ID},"
+
+    def changeLogSets = currentBuild.changeSets
+    for (int i = 0; i < changeLogSets.size(); i++) {
+        def entries = changeLogSets[i].items
+
+        // Get Commit IDs
+        for (int j = 0; j < entries.length; j++) {
+            versionHistory += "${entries[j].commitId} "
+        }
+
+        versionHistory += ","
+
+        // Get Commit Messages
+        for (int j = 0; j < entries.length; j++) {
+            versionHistory += "${entries[j].msg} "
+        }
+
+    }
+    
+    versionHistory += ", , "
+    return versionHistory
+}
+
 pipeline {
     agent any
     
@@ -12,13 +38,21 @@ pipeline {
                 sh 'echo "Testing help message"'
                 sh './Piton -h'
 
-                sh 'echo "Testing read.pi"'
-                sh './Piton -f tests/read.pi'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh 'echo "DEPLOYING..."'
+                script {
+                    def newVersionContent = buildVersionHistory().toString()
+                    def versionHistoryLog = "${WORKSPACE}/VersionHistory.csv"
+
+                    def previousVersionHistory = ""
+                    if (fileExists(versionHistoryLog)) {
+                        previousVersionHistory = readFile versionHistoryLog
+                    } else {
+                        previousVersionHistory = "Date,Build,Git Commit, Git Message"
+                    }
+
+                    writeFile   file: versionHistoryLog,
+                                text: previousVersionHistory + "\n" + newVersionContent
+                    archiveArtifacts artifacts: "VersionHistory.csv"
+                }
             }
         }
     }
