@@ -10,7 +10,7 @@ void lexer_error(int line_number, token_t *token, const char *message) {
 
     exit(1);
 }
-     
+          
 // initialize the lexer
 void init_lexer(line_t *line_data) {
     lex = (lexer_t *) malloc(sizeof(lexer_t *));
